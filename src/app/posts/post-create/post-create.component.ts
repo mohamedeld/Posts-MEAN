@@ -17,7 +17,7 @@ export class PostCreateComponent {
       return;
     }
     const post: IPost = {
-      id: null,
+      _id: '',
       title: myForm.value.title,
       content: myForm.value.content,
     };

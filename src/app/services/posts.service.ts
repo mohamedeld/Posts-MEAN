@@ -24,7 +24,32 @@ export class PostsService {
     return this.changedPosts.asObservable();
   }
   addPost(post: IPost) {
-    this.posts.push(post);
-    this.changedPosts.next(this.posts.slice());
+    this.http
+      .post<{ message: string; post: IPost }>(
+        'http://localhost:3000/api/posts',
+        post
+      )
+      .subscribe((responseData) => {
+        console.log(responseData.message);
+        const newPost = {
+          _id: responseData.post._id,
+          title: responseData.post.title,
+          content: responseData.post.content,
+        };
+        this.posts.push(newPost);
+        this.changedPosts.next(this.posts.slice());
+      });
+  }
+  deletePost(postId: string) {
+    this.http.delete('http://localhost:3000/api/posts/' + postId).subscribe(
+      () => {
+        const updatePosts = this.posts.filter((post) => post._id !== postId);
+        this.posts = updatePosts;
+        this.changedPosts.next(this.posts.slice());
+      },
+      (error) => {
+        console.error('Failed to delete post:', error);
+      }
+    );
   }
 }
