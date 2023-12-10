@@ -5,7 +5,7 @@
       <input
         type="text"
         matInput
-        ngModel
+        [ngModel]="post.title"
         name="title"
         required
         minlength="3"
@@ -20,7 +20,7 @@
         matInput
         rows="5"
         name="content"
-        ngModel
+        [ngModel]="post.content"
         placeholder="Enter your post content"
         required
         #contentInput="ngModel"
@@ -35,7 +35,7 @@
       [disabled]="myForm.invalid"
       color="primary"
     >
-      Add
+      {{ mode === "create" ? "Add" : "Update" }}
     </button>
   </form>
 </mat-card>
