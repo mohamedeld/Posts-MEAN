@@ -1,9 +1,37 @@
 const Post = require("../models/post");
+const multer = require("multer");
+
+const MIME_TYPE_MAP = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+};
+
+exports.storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const isValid = MIME_TYPE_MAP[file.mimetype];
+
+    if (isValid) {
+      cb(null, "backend/images");
+    } else {
+      const error = new Error("Invalid mime type");
+      cb(error, "backend/images");
+    }
+  },
+  filename: (req, file, cb) => {
+    const name = file.originalname.toLowerCase().split(" ").join("-");
+    const ext = MIME_TYPE_MAP[file.mimetype];
+    cb(null, name + "-" + Date.now() + "." + ext);
+  },
+});
+
 exports.createPost = async (request, response, next) => {
+  const url = request.protocol + "://" + request.get("host");
   try {
     const post = await Post.create({
       title: request.body.title,
       content: request.body.content,
+      imagePath: url + "/images/" + request.file.filename,
     });
 
     response.status(201).json({
@@ -52,6 +80,11 @@ exports.getPost = async (request, response, next) => {
 };
 exports.updatePost = async (request, response, next) => {
   try {
+    let imagePath = request.body.imagePath;
+    if (request.file) {
+      const url = request.protocol + "://" + request.get("host");
+      imagePath = url + "/images/" + request.file.filename;
+    }
     const updatedPost = await Post.findByIdAndUpdate(
       request.params.id,
       {

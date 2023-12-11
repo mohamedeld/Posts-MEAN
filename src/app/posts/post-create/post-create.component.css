@@ -5,3 +5,10 @@ textarea {
 mat-card {
   margin-bottom: 1rem;
 }
+input[type="file"] {
+  visibility: hidden;
+}
+.preview {
+  width: 20rem;
+  object-fit: cover;
+}

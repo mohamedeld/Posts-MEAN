@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const Post = require("./models/post");
 const postRoutes = require("./routes/posts");
+const path = require("path");
 const app = express();
 mongoose
   .connect(
@@ -10,6 +11,8 @@ mongoose
   .then(() => console.log("database connected successfully"))
   .catch((err) => console.log(`Connection Failed: ${err.message}`));
 app.use(express.json());
+app.use("/images", express.static(path.join("backend/images")));
+
 app.use((request, response, next) => {
   response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader(
